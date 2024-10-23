@@ -101,6 +101,9 @@ public:
     {
         auto parent = 1;
 
+        data[parent] = data.back();
+        data.pop_back();
+
         while (true)
         {
             auto lchild = parent << 1, rchild = lchild + 1;
@@ -108,14 +111,18 @@ public:
             if (lchild >= data.size())
                 break; // Parent is a leaf, done!
 
-            auto max_child_index = (rchild < data.size()) ? data[lchild] > data[rchild] ? lchild : rchild : lchild;
+            auto max_child_index = -1;
+            
+            if (rchild < data.size())
+                max_child_index = data[lchild] > data[rchild] ? lchild : rchild;
+            else
+                max_child_index = lchild;
 
-            data[parent] = data[max_child_index];
+            if (data[parent] < data[max_child_index])
+                std::swap(data[parent], data[max_child_index]);
 
             parent = max_child_index;
         }
-
-        data.pop_back();
     }
 
     auto size() const -> size_type
