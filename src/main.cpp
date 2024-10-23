@@ -2,6 +2,16 @@
 
 #include "heap.hpp"
 
+struct X
+{
+    float value;
+
+    friend auto operator<(X lhs, X rhs) -> bool
+    {
+        return lhs.value < rhs.value;
+    }    
+};
+
 int main()
 {
     Heap<int> h;
@@ -38,6 +48,19 @@ int main()
     {
         std::cout << cc.peek() << std::endl; // This will generate correct in-order behaviour.
         cc.pop();
+    }
+
+    Heap<X> xh;
+
+    xh.insert({ 2.5 });
+    xh.insert({ 0.01 });
+    xh.insert({ 4 });
+
+
+    while (!xh.empty())
+    {
+        std::cout << xh.peek().value << std::endl; // This will generate correct in-order behaviour.
+        xh.pop();
     }
 
     return 0;

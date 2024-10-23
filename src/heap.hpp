@@ -114,7 +114,7 @@ public:
             auto max_child_index = -1;
             
             if (rchild < data.size())
-                max_child_index = data[lchild] > data[rchild] ? lchild : rchild;
+                max_child_index = data[rchild] < data[lchild] ? lchild : rchild;
             else
                 max_child_index = lchild;
 
@@ -168,7 +168,7 @@ private:
             else
                 parent = item >> 1; // Just divide by two
 
-            if (data[item] > data[parent])
+            if (data[parent] < data[item])
                 std::swap(data[item], data[parent]);
             else
                 break;
