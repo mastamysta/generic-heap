@@ -4,11 +4,19 @@
 #include <cstdint>
 #include <algorithm>
 #include <optional>
+#include <concepts>
 
-template <typename ValueType>
+template <typename T>
+concept LessThanAble = requires (T t, T u)
+{
+    { t < u } -> std::same_as<bool>;
+    { u < t } -> std::same_as<bool>;
+};
+
+template <LessThanAble ValueType>
 class Heap;
 
-template <typename ValueType>
+template <LessThanAble ValueType>
 class HeapIterator
 {
 public:
@@ -61,7 +69,7 @@ private:
     typename Heap<value_type>::size_type index;
 };
 
-template <typename ValueType>
+template <LessThanAble ValueType>
 class Heap
 {
 public:
