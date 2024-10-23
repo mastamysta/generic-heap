@@ -10,12 +10,17 @@ int main()
     h.insert(2);
     h.insert(100);
     h.insert(50);
-    
-    for (int i = 0; i < 4; i++)
+
+    auto cc = Heap<int>(h);
+
+    while (!h.empty())
     {
         std::cout << h.peek() << std::endl;
         h.pop();
     }
+
+    for (auto i: cc)
+        std::cout << i << std::endl;
 
     return 0;
 }

@@ -2,21 +2,91 @@
 
 #include <vector>
 #include <cstdint>
+#include <algorithm>
+#include <optional>
+
+template <typename ValueType>
+class Heap;
+
+template <typename ValueType>
+class HeapIterator
+{
+public:
+    using value_type = ValueType;
+    using difference_type = int32_t;
+    using iterator_categort = std::forward_iterator_tag;
+    using pointer = value_type*;
+    using reference = value_type&;
+    using const_reference = const value_type&;
+
+    explicit HeapIterator() : index(1), data(nullptr) {}
+    explicit HeapIterator(typename Heap<value_type>::size_type i, const std::vector<value_type>* d) : index(i), data(d) {}
+    HeapIterator(const HeapIterator& other) : index(other.index), data(other.data) {}
+
+    auto operator++() -> HeapIterator
+    {
+        index++;
+        return *this;
+    }
+
+    auto operator++(int) -> HeapIterator
+    {
+        auto before = *this;
+        index++;
+        return before;
+    }
+
+    auto operator*() const -> const_reference
+    {
+        return (*data)[index];
+    }
+
+    auto operator->() const -> pointer
+    {
+        return &((*data)[index]);
+    }
+
+    friend auto operator==(HeapIterator lhs, HeapIterator rhs) -> bool
+    {
+        return lhs.index == rhs.index;
+    }
+
+    friend auto operator!=(HeapIterator lhs, HeapIterator rhs) -> bool
+    {
+        return lhs.index != rhs.index;
+    }
+
+private:
+    const std::vector<value_type>* data;
+    typename Heap<value_type>::size_type index;
+};
 
 template <typename ValueType>
 class Heap
 {
 public:
     using value_type = ValueType;
+    using reference = value_type&;
+    using const_reference = const value_type&;
+    using size_type = std::size_t;
+    using iterator = HeapIterator<value_type>;
+    using const_iterator = const HeapIterator<value_type>;
+    using difference_type = int32_t;
 
-    Heap()
+    explicit Heap()
     {
         // 1-indexed array is helpful for heap structure, but beware! Doing this in the
         // constructor constrains the value_type to default-constructible types only.
         data = std::vector<value_type>(1, value_type());
     }
 
-    auto insert(value_type v) -> void
+    explicit Heap(const Heap& other)
+    {
+        data.resize(other.data.size());
+        std::copy(other.data.begin(), other.data.end(), data.begin());
+    }
+
+    auto insert(const value_type& v) -> void
     {
         data.push_back(v);
         heapify(data.size() - 1);
@@ -48,9 +118,30 @@ public:
         data.pop_back();
     }
 
-    auto size() const -> std::size_t
+    auto size() const -> size_type
     {
         return data.size() - 1;
+    }
+
+    auto empty() const -> bool
+    {
+        return data.size() == 1;
+    }
+
+    auto clear() -> void
+    {
+        data.clear();
+        data.push_back(value_type());
+    }
+
+    auto begin() const -> iterator
+    {
+        return iterator(1, &data);
+    }
+
+    auto end() const -> iterator
+    {
+        return iterator(data.size(), &data);
     }
 
 private:
